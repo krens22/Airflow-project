@@ -25,3 +25,4 @@ with DAG('user_processing', start_date=datetime(2023,8,24),
         '''
 
         )
+# A postrgres connection must be created in the Airflow UI
