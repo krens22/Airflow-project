@@ -9,3 +9,10 @@ airflow -h
 
 # Run a single task instance on-demand, which can be useful for debugging and troubleshooting purposes.
 airflow tasks test user_processing create_table 2023-08-24
+
+
+# Data retrival from database
+docker-compose -f /Users/karenfernandes/Documents/Materials/airflow.apache.org_docs_apache-airflow_2.5.1_docker-compose.yaml ps
+docker exec -it materials-postgres-1  /bin/bash
+psql -Uairflow
+SELECT * FROM users; Enter query to retrieve information
