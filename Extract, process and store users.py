@@ -1,8 +1,12 @@
-from airflow.providers.http.operators.http import SimpleHttpOperator
+
+from airflow import DAG
+from airflow.providers.postgres.operators.postgres import PostgresOperator
+from airflow.providors.http.sensors.http import HttpSensorfrom airflow.providers.http.operators.http import SimpleHttpOperator
 from airflow.operators.python import PythonOperator
+
+from airflow.providers.postgres.hooks.postgres import PostgresHook
 import json
 from pandas import json_normalize
-from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 # Define a function to pull the data that has been downloaded by the task extract
 def _process_user(ti):
@@ -25,7 +29,17 @@ def _store_user():
         filename = '/tmp/processed_user.csv'
     )
 
+#Define DAG
+with DAG('user_processing', start_date=datetime(2023,8,24),
+        schedule_interval='@daily', catchup=False) as dag:
 
+#Add a sensor
+is_api_available = HttpSensor(
+        task_id = 'is_api_available',
+        http_con_id = 'user_api',
+        endpoint = 'api/',
+        method='GET',
+        
 #Extract the user data from the API
 extract_user = SimpleHttpOperator(
         task_id = 'extract_user',
@@ -46,3 +60,10 @@ store_user = PythonOperator(
     task_id = 'store_user'
     python_callable=_store_user
 )
+
+
+#Define dependancies in the correct order at the end of the dag file
+#big-shift operator indicates that you want to execute create table first and then check if the API is available.
+create_table >> is_api_available >> extract_user >> process_user >> store_user
+
+#The final data pipeline would be visible in the graph view
