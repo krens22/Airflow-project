@@ -6,7 +6,7 @@ from datetime import datetime
 def subdag_downloads(parent_dag_id, child_dag_id,args):
 
     with DAG (f"{parent_dag_id}.{child_dag_id}", 
-        start_date = args['start_date'],
+        start_date = datetime(2023,8,25),
         schedule_intervals=args['schedule_interval'],
         catchup = args['catchup']) as dag:
 
