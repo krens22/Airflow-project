@@ -1,2 +1,2 @@
 # Airflow-project
-A basic data pipeline using 
+A basic data pipeline on docker containers using Apache Airflow 
